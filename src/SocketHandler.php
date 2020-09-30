@@ -10,6 +10,7 @@ namespace App;
 
 use App\Event\EventHandler;
 use App\Service\MapService;
+use App\Service\ObjectMapperService;
 use App\Service\PlayerService;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
@@ -21,7 +22,8 @@ class SocketHandler implements MessageComponentInterface
     public function __construct()
     {
         $playerService = new PlayerService();
-        $mapService = new MapService('/map.txt');
+        $objectMapper = new ObjectMapperService();
+        $mapService = new MapService('map.txt', $objectMapper);
         $this->eventHandler = new EventHandler($playerService, $mapService);
     }
 

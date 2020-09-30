@@ -9,24 +9,23 @@
 namespace App\DTO;
 
 
+use App\Service\ObjectMapperService;
 use Ratchet\ConnectionInterface;
 
-class Player
+class Player extends GameObject
 {
-    private $x;
-    private $y;
     private $conn;
 
     /**
      * Player constructor.
      * @param $x
      * @param $y
+     * @param $char
      * @param ConnectionInterface $conn
      */
-    public function __construct($x, $y, ConnectionInterface $conn)
+    public function __construct($x, $y, $char, ConnectionInterface $conn)
     {
-        $this->x = $x;
-        $this->y = $y;
+        parent::__construct($x, $y, $char, ObjectMapperService::TYPE_PLAYER);
         $this->conn = $conn;
     }
 
@@ -37,41 +36,4 @@ class Player
     {
         return $this->conn;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getX()
-    {
-        return $this->x;
-    }
-
-    /**
-     * @param mixed $x
-     * @return Player
-     */
-    public function setX($x)
-    {
-        $this->x = $x;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getY()
-    {
-        return $this->y;
-    }
-
-    /**
-     * @param mixed $y
-     * @return Player
-     */
-    public function setY($y)
-    {
-        $this->y = $y;
-        return $this;
-    }
-
 }

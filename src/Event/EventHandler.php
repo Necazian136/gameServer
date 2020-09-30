@@ -28,12 +28,16 @@ class EventHandler
 
     public function handleConnect(ConnectionInterface $conn)
     {
-        $this->clients->attach($conn);
+        list($x, $y) = $this->mapService->findRandomEmptyTile();
+        $player = $this->playerService->createPlayer((int)$x, (int)$y, $conn);
+        $this->mapService->addPlayer($player);
     }
 
     public function handleEvent(ConnectionInterface $conn, $message)
     {
+        $playerMap = $this->mapService->getMapForPlayer($player);
         foreach ($this->clients as $client) {
+            $player = $this->playerService->getPlayerByConnection($client);
             $client->send($message);
         }
         $this->clients->attach($conn);
@@ -41,6 +45,6 @@ class EventHandler
 
     public function handleDisconnect(ConnectionInterface $conn)
     {
-        $this->clients->detach($conn);
+        $this->playerService->removePlayerByConnection($conn);
     }
 }

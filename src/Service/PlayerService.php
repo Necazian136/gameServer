@@ -29,7 +29,7 @@ class PlayerService
 
     public function createPlayer($x, $y, ConnectionInterface $conn)
     {
-        $player = new Player($x, $y, $conn);
+        $player = new Player($x, $y, (string)(count($this->players)), $conn);
         $this->players->attach($player);
         return $player;
     }
@@ -42,16 +42,21 @@ class PlayerService
         return $this->players;
     }
 
-    public function removePlayerByConnection(ConnectionInterface $conn)
+    public function getPlayerByConnection(ConnectionInterface $conn)
     {
-        /**
-         * @var Player $player
-         */
         foreach ($this->players as $player) {
             if ($conn === $player->getConn()) {
-                $this->players->detach($player);
-                break;
+                return $player;
             }
+        }
+        return null;
+    }
+
+    public function removePlayerByConnection(ConnectionInterface $conn)
+    {
+        $player = $this->getPlayerByConnection($conn);
+        if ($player) {
+            $this->players->detach($player);
         }
     }
 
