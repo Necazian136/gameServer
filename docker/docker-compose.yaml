@@ -1,0 +1,14 @@
+version: '3'
+services:
+  socket:
+    # у нас свой образ для PHP, указываем путь к нему и говорим что его надо собрать
+    build: ./socket
+    environment:
+      XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    # этот образ будет общаться с mysql
+    # монтируем директорию с проектами
+    volumes:
+    - ../:/var/server
+    ports:
+    - "8080:8080"

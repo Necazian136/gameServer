@@ -1,0 +1,20 @@
+{
+    "name": "iumymrin/sockets",
+    "authors": [
+        {
+            "name": "Yuriy Mymrin",
+            "email": "iumymrin@htc-cs.ru"
+        }
+    ],
+    "require": {
+        "react/socket": "1.6",
+        "clue/socket-raw": "1.4.1",
+        "cboden/ratchet": "^0.4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Services\\": "services",
+            "App\\": "src"
+        }
+    }
+}
