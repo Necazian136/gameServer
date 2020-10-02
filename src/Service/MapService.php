@@ -25,8 +25,6 @@ class MapService
 
     private $mapWidth;
 
-    private $map;
-
     public function __construct($mapPath, ObjectMapperService $objectMapperService)
     {
         $mapString = file_get_contents($mapPath);
@@ -37,12 +35,9 @@ class MapService
         $this->objects = new \SplObjectStorage();
         $y = 0;
         $x = 0;
-        $this->map = [];
         foreach ($map as $row) {
             $x = 0;
-            $this->map[$y] = [];
             foreach ($row as $char) {
-                $this->map[$y][$x] = $char;
                 $object = $objectMapperService->createObject($x, $y, $char);
                 if ($object) {
                     $this->objects->attach($object);
@@ -82,25 +77,58 @@ class MapService
 
     public function getMapForPlayer(Player $player)
     {
-        $x = $player->getX() - (int)(self::PLAYER_VISION_LENGTH / 2);
-        $y = $player->getY() - (int)(self::PLAYER_VISION_LENGTH / 2);
-        $result = '';
-        for ($j = $y; $j < $y + self::PLAYER_VISION_LENGTH; $j++) {
-            for ($i = $x; $i < $x + self::PLAYER_VISION_LENGTH; $i++) {
-                if (isset($this->map[$j][$i])) {
-                    $result .= $this->map[$j][$i];
-                } else {
-                    $result .= '*';
+        $map = array_fill(0, self::PLAYER_VISION_LENGTH, array_fill(0, self::PLAYER_VISION_LENGTH, ' '));
+
+        $vision = (int)(self::PLAYER_VISION_LENGTH / 2);
+        /**
+         * @var GameObject $object
+         */
+        foreach ($this->objects as $object) {
+            // TODO: переписать на формулу круга
+            $x = $player->getX() - $object->getX();
+            if (abs($x) <= $vision) {
+                $y = $player->getY() - $object->getY();
+                if (abs($y) <= $vision) {
+                    $map[$vision - $y][$vision - $x] = $object->getChar();
                 }
             }
-            $result .= "\n";
         }
-        return $result;
+        foreach ($map as $key => $row) {
+            $map[$key] = implode($row);
+        }
+        return implode("\n", $map);
+    }
+
+    public function getPlayersAroundPlayer(Player $player)
+    {
+        $vision = (int)(self::PLAYER_VISION_LENGTH / 2);
+        $objects = new \SplObjectStorage();
+        /**
+         * @var GameObject $object
+         */
+        foreach ($this->objects as $object) {
+            if ($player === $object || $object->getType() !== ObjectMapperService::TYPE_PLAYER) {
+                continue;
+            }
+            // TODO: переписать на формулу круга
+            $x = $player->getX() - $object->getX();
+            if (abs($x) <= $vision) {
+                $y = $player->getY() - $object->getY();
+                if (abs($y) <= $vision) {
+                    $objects->attach($object);
+                }
+            }
+        }
+        return $objects;
     }
 
     public function addPlayer(Player $player)
     {
-        $this->map[$player->getY()][$player->getX()] = $player->getChar();
         $this->objects->attach($player);
+    }
+
+    public function removeObject(GameObject $object)
+    {
+        $this->objects->detach($object);
     }
 }

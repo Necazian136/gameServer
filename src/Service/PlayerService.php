@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
+
 /**
  * Created by PhpStorm.
  * User: iumymrin
@@ -15,7 +16,7 @@ use Ratchet\ConnectionInterface;
 class PlayerService
 {
     /**
-     * @var \SplObjectStorage
+     * @var Player[]
      */
     private $players;
 
@@ -24,44 +25,59 @@ class PlayerService
      */
     public function __construct()
     {
-        $this->players = new \SplObjectStorage();
+        $this->players = [];
     }
 
     public function createPlayer($x, $y, ConnectionInterface $conn)
     {
         $player = new Player($x, $y, (string)(count($this->players)), $conn);
-        $this->players->attach($player);
+        $this->players[$conn->resourceId] = ($player);
         return $player;
     }
 
+
     /**
-     * @return \SplObjectStorage
+     * @return Player[]
      */
     public function getPlayers()
     {
         return $this->players;
     }
 
+    /**
+     * @param ConnectionInterface $conn
+     * @return Player
+     */
     public function getPlayerByConnection(ConnectionInterface $conn)
     {
-        foreach ($this->players as $player) {
-            if ($conn === $player->getConn()) {
-                return $player;
-            }
-        }
-        return null;
+        return $this->players[$conn->resourceId];
     }
 
     public function removePlayerByConnection(ConnectionInterface $conn)
     {
-        $player = $this->getPlayerByConnection($conn);
-        if ($player) {
-            $this->players->detach($player);
-        }
+        unset($this->players[$conn->resourceId]);
     }
 
     public function removePlayer(Player $player)
     {
-        $this->players->detach($player);
+        unset($this->players[$player->getConn()->resourceId]);
+    }
+
+    public function movePlayer(Player $player, $direction)
+    {
+        switch ($direction) {
+            case 'Up':
+                $player->setY($player->getY() - 1);
+                break;
+            case 'Down':
+                $player->setY($player->getY() + 1);
+                break;
+            case 'Left':
+                $player->setX($player->getX() - 1);
+                break;
+            case 'Right':
+                $player->setX($player->getX() + 1);
+                break;
+        }
     }
 }

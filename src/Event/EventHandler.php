@@ -9,6 +9,9 @@
 namespace App\Event;
 
 
+use App\DTO\Player;
+use App\DTO\RequestObject;
+use App\DTO\ResponseObject;
 use App\Service\MapService;
 use App\Service\PlayerService;
 use Ratchet\ConnectionInterface;
@@ -31,20 +34,45 @@ class EventHandler
         list($x, $y) = $this->mapService->findRandomEmptyTile();
         $player = $this->playerService->createPlayer((int)$x, (int)$y, $conn);
         $this->mapService->addPlayer($player);
+        $playerMap = $this->mapService->getMapForPlayer($player);
+        $this->movePlayer($player);
     }
 
-    public function handleEvent(ConnectionInterface $conn, $message)
+    /**
+     * @param ConnectionInterface $conn
+     * @param RequestObject $request
+     */
+    public function handleEvent(ConnectionInterface $conn, RequestObject $request)
     {
-        $playerMap = $this->mapService->getMapForPlayer($player);
-        foreach ($this->clients as $client) {
-            $player = $this->playerService->getPlayerByConnection($client);
-            $client->send($message);
+        $player = $this->playerService->getPlayerByConnection($conn);
+        switch ($request->action) {
+            case 'move':
+                $this->movePlayer($player, $request->vaule);
+
         }
-        $this->clients->attach($conn);
     }
 
     public function handleDisconnect(ConnectionInterface $conn)
     {
-        $this->playerService->removePlayerByConnection($conn);
+        $player = $this->playerService->getPlayerByConnection($conn);
+        if ($player) {
+            $this->mapService->removeObject($player);
+            $this->playerService->removePlayer($player);
+        }
+    }
+
+    protected function movePlayer(Player $player, $direction = null)
+    {
+        $this->playerService->movePlayer($player, $direction);
+        $playerMap = $this->mapService->getMapForPlayer($player);
+        $player->getConn()->send(new ResponseObject($playerMap));
+        /**
+         * @var Player[] $otherPlayers
+         */
+        $otherPlayers = $this->mapService->getPlayersAroundPlayer($player);
+        foreach ($otherPlayers as $otherPlayer) {
+            $otherPlayerMap = $this->mapService->getMapForPlayer($otherPlayer);
+            $otherPlayer->getConn()->send(new ResponseObject($otherPlayerMap));
+        }
     }
 }

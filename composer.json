@@ -9,7 +9,8 @@
     "require": {
         "react/socket": "1.6",
         "clue/socket-raw": "1.4.1",
-        "cboden/ratchet": "^0.4.3"
+        "cboden/ratchet": "^0.4.3",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

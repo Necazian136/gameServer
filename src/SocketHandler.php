@@ -8,6 +8,7 @@
 
 namespace App;
 
+use App\DTO\RequestObject;
 use App\Event\EventHandler;
 use App\Service\MapService;
 use App\Service\ObjectMapperService;
@@ -34,7 +35,7 @@ class SocketHandler implements MessageComponentInterface
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
-        $this->eventHandler->handleEvent($from, $msg);
+        $this->eventHandler->handleEvent($from, new RequestObject($msg));
     }
 
     public function onClose(ConnectionInterface $conn)

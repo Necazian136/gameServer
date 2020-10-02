@@ -14,7 +14,7 @@ use App\DTO\GameObject;
 class ObjectMapperService
 {
     const TYPE_PLAYER = 'Player';
-    const TYPE_TREE = 'Tree';
+    const TYPE_BUSH = 'Bush';
 
     public function createObject($x, $y, $char)
     {
@@ -28,8 +28,8 @@ class ObjectMapperService
             case '6':
             case '7':
                 return new GameObject($x, $y, $char, self::TYPE_PLAYER);
-            case 'T':
-                return new GameObject($x, $y, $char, self::TYPE_TREE);
+            case 'B':
+                return new GameObject($x, $y, $char, self::TYPE_BUSH);
                 break;
         }
         return null;
