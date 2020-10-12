@@ -48,7 +48,6 @@ class EventHandler
         switch ($request->action) {
             case 'move':
                 $this->movePlayer($player, $request->vaule);
-
         }
     }
 

@@ -2,6 +2,7 @@
 
 
 require_once  __DIR__ . '/../vendor/autoload.php';
+require_once  __DIR__ . '/../config/credentials.php';
 
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
@@ -14,7 +15,9 @@ $server = IoServer::factory(
             new SocketHandler()
         )
     ),
-    8080
+    SERVER_PORT, SERVER_IP
 );
+
+echo 'Running on ' . SERVER_IP . ':' . SERVER_PORT . PHP_EOL;
 
 $server->run();
