@@ -11,6 +11,7 @@ namespace App\Service;
 
 
 use App\DTO\Player;
+use App\Event\EventDispatcher;
 use Ratchet\ConnectionInterface;
 
 class PlayerService
@@ -28,6 +29,12 @@ class PlayerService
         $this->players = [];
     }
 
+    /**
+     * @param $x
+     * @param $y
+     * @param ConnectionInterface $conn
+     * @return Player
+     */
     public function createPlayer($x, $y, ConnectionInterface $conn)
     {
         $player = new Player($x, $y, (string)(count($this->players)), $conn);
@@ -42,6 +49,25 @@ class PlayerService
     public function getPlayers()
     {
         return $this->players;
+    }
+
+
+    public function getPlayersAroundPlayer(Player $player)
+    {
+        $vision = (int)($player->getVision() / 2);
+        $players = new \SplObjectStorage();
+
+
+        foreach ($this->players as $otherPlayer) {
+            $x = $player->getX() - $otherPlayer->getX();
+            if (abs($x) <= $vision) {
+                $y = $player->getY() - $otherPlayer->getY();
+                if (abs($y) <= $vision) {
+                    $players->attach($otherPlayer);
+                }
+            }
+        }
+        return $players;
     }
 
     /**

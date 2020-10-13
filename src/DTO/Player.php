@@ -16,6 +16,8 @@ class Player extends GameObject
 {
     private $conn;
 
+    private $vision;
+
     /**
      * Player constructor.
      * @param $x
@@ -27,6 +29,7 @@ class Player extends GameObject
     {
         parent::__construct($x, $y, $char, ObjectMapperService::TYPE_PLAYER);
         $this->conn = $conn;
+        $this->vision = 11;
     }
 
     /**
@@ -35,5 +38,13 @@ class Player extends GameObject
     public function getConn()
     {
         return $this->conn;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVision()
+    {
+        return $this->vision;
     }
 }

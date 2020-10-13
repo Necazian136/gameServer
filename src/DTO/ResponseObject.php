@@ -11,11 +11,20 @@ namespace App\DTO;
 
 class ResponseObject
 {
-    private $map;
+    const MAP_KEY = 'map';
+    const OBJECTS_KEY = 'objects';
+    const GET_PLAYERS_KEY = 'get_players';
+    const ADD_PLAYERS_KEY = 'add_players';
+    const REMOVE_PLAYERS_KEY = 'remove_players';
+    const EVENTS_KEY = 'events';
 
-    public function __construct($map)
+    private $key;
+    private $value;
+
+    public function __construct($key, $value)
     {
-        $this->map = $map;
+        $this->key = $key;
+        $this->value = $value;
     }
 
     public function __toString()
@@ -23,7 +32,7 @@ class ResponseObject
         /**
          * @var string $result
          */
-        $result = json_encode(['map' => $this->map]);
+        $result = json_encode([$this->key => $this->value]);
         return $result;
     }
 }
