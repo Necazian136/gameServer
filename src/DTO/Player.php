@@ -30,6 +30,7 @@ class Player extends GameObject
         parent::__construct($x, $y, $char, ObjectMapperService::TYPE_PLAYER);
         $this->conn = $conn;
         $this->vision = 11;
+        $this->movable = true;
     }
 
     /**

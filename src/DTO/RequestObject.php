@@ -20,7 +20,7 @@ class RequestObject
      */
     public $conn;
 
-    public function __construct($request, $value = null)
+    public function __construct($request, $value = null, $conn = null)
     {
         if ($value === null) {
             $request = json_decode($request, true);
@@ -29,6 +29,9 @@ class RequestObject
         } else {
             $this->event = $request;
             $this->value = $value;
+        }
+        if ($conn) {
+            $this->conn = $conn;
         }
     }
 

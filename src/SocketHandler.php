@@ -25,7 +25,7 @@ class SocketHandler implements MessageComponentInterface
     public function __construct()
     {
         $eventDispatcher = new EventDispatcher();
-        $playerService = new PlayerService();
+        $playerService = new PlayerService($eventDispatcher);
         $mapService = new MapService('map.txt', new ObjectMapperService());
         $eventService = new EventService($playerService, $mapService);
 
@@ -36,21 +36,17 @@ class SocketHandler implements MessageComponentInterface
 
     public function onOpen(ConnectionInterface $conn)
     {
-        $event = new RequestObject('connect', true);
-        $event->setConnection($conn);
-        $this->eventHandler->handleEvent($event);
+        $this->eventHandler->handleEvent($event = new RequestObject('connect', true, $conn));
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
-        $this->eventHandler->handleEvent((new RequestObject($msg))->setConnection($from));
+        $this->eventHandler->handleEvent((new RequestObject($msg, null, $from)));
     }
 
     public function onClose(ConnectionInterface $conn)
     {
-        $event = new RequestObject('disconnect', true);
-        $event->setConnection($conn);
-        $this->eventHandler->handleEvent($event);
+        $this->eventHandler->handleEvent(new RequestObject('disconnect', true, $conn));
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)

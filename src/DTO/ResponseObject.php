@@ -16,7 +16,8 @@ class ResponseObject
     const GET_PLAYERS_KEY = 'get_players';
     const ADD_PLAYERS_KEY = 'add_players';
     const REMOVE_PLAYERS_KEY = 'remove_players';
-    const EVENTS_KEY = 'events';
+    const UPDATE_PLAYER_KEY = 'update_player';
+    const GET_PLAYER_KEY = 'get_player';
 
     private $key;
     private $value;

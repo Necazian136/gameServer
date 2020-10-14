@@ -18,8 +18,6 @@ class EventService
     private $playerService;
     private $mapService;
 
-    private $visiblePlayers;
-
     public function __construct(PlayerService $playerService, MapService $mapService)
     {
         $this->playerService = $playerService;
@@ -31,7 +29,7 @@ class EventService
         list($x, $y) = $this->mapService->findRandomEmptyTile();
         $player = $this->playerService->createPlayer((int)$x, (int)$y, $request->conn);
         $request->conn->send(new ResponseObject(ResponseObject::MAP_KEY, $this->mapService->getMapForPlayer($player)));
-        $request->conn->send(new ResponseObject(ResponseObject::GET_PLAYERS_KEY, $this->playerService->getPlayersAroundPlayer($player)));
+        $request->conn->send(new ResponseObject(ResponseObject::GET_PLAYER_KEY, $player));
     }
 
     public function disconnectEvent(RequestObject $request)
@@ -46,21 +44,33 @@ class EventService
     public function moveEvent(RequestObject $request)
     {
         $player = $this->playerService->getPlayerByConnection($request->conn);
-        $this->movePlayer($player, $request->value);
+        $this->playerService->movePlayer($player, $request->value);
     }
 
-    protected function movePlayer(Player $player, $direction = null)
+    public function addPlayerEvent(RequestObject $request)
     {
-        $this->playerService->movePlayer($player, $direction);
-        $playerMap = $this->mapService->getMapForPlayer($player);
-        $player->getConn()->send(new ResponseObject($playerMap));
         /**
-         * @var Player[] $otherPlayers
+         * @var Player $player
          */
-        $otherPlayers = $this->mapService->getPlayersAroundPlayer($player);
-        foreach ($otherPlayers as $otherPlayer) {
-            $otherPlayerMap = $this->mapService->getMapForPlayer($otherPlayer);
-            $otherPlayer->getConn()->send(new ResponseObject($otherPlayerMap));
-        }
+        $player = $request->value;
+        $request->conn->send(new ResponseObject(ResponseObject::ADD_PLAYERS_KEY, $player));
+    }
+
+    public function removePlayerEvent(RequestObject $request)
+    {
+        /**
+         * @var Player $player
+         */
+        $player = $request->value;
+        $request->conn->send(new ResponseObject(ResponseObject::REMOVE_PLAYERS_KEY, $player));
+    }
+
+    public function updatePlayerEvent(RequestObject $request)
+    {
+        /**
+         * @var Player $player
+         */
+        $player = $request->value;
+        $request->conn->send(new ResponseObject(ResponseObject::UPDATE_PLAYER_KEY, $player));
     }
 }
