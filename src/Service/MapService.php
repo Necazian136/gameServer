@@ -9,8 +9,8 @@
 namespace App\Service;
 
 
-use App\DTO\GameObject;
-use App\DTO\Player;
+use App\DTO\Game\GameObject;
+use App\DTO\Game\PlayerObject;
 
 class MapService
 {
@@ -23,19 +23,25 @@ class MapService
 
     private $mapWidth;
 
-    public function __construct($mapPath, ObjectMapperService $objectMapperService)
+    public function __construct($mapPath, $tileMap, ObjectMapperService $objectMapperService)
     {
-        $mapString = file_get_contents($mapPath);
-        $map = [];
-        foreach (explode("\n", $mapString) as $row) {
-            $map[] = str_split($row);
+        $objectsString = file_get_contents($mapPath);
+        $tilesString = file_get_contents($tileMap);
+        $objects = [];
+        $tiles = [];
+        foreach (explode("\n", $objectsString) as $row) {
+            $objects[] = str_split($row);
+        }
+        foreach (explode("\n", $tilesString) as $row) {
+            $tiles[] = str_split($row);
         }
         $this->objects = new \SplObjectStorage();
         $y = 0;
         $x = 0;
-        foreach ($map as $row) {
+        foreach ($tiles as $row) {
             $x = 0;
-            foreach ($row as $char) {
+            foreach ($row as $tileChar) {
+                $objectChar = $objects[$x][$y];
                 $object = $objectMapperService->createObject($x, $y, $char);
                 if ($object) {
                     $this->objects->attach($object);
@@ -73,30 +79,12 @@ class MapService
         return explode('_', array_rand($emptyTiles));
     }
 
-    public function getMapForPlayer(Player $player)
+    public function getMap()
     {
-        $map = array_fill(0, $player->getVision(), array_fill(0, $player->getVision(), ' '));
-
-        $vision = (int)($player->getVision() / 2);
-        /**
-         * @var GameObject $object
-         */
-        foreach ($this->objects as $object) {
-            $x = $player->getX() - $object->getX();
-            if (abs($x) <= $vision) {
-                $y = $player->getY() - $object->getY();
-                if (abs($y) <= $vision) {
-                    $map[$vision - $y][$vision - $x] = $object->getChar();
-                }
-            }
-        }
-        foreach ($map as $key => $row) {
-            $map[$key] = implode($row);
-        }
-        return implode("\n", $map);
+        return ['objects' => $this->map, 'tiles'=> $this->tileMap];
     }
 
-    public function addPlayer(Player $player)
+    public function addPlayer(PlayerObject $player)
     {
         $this->objects->attach($player);
     }

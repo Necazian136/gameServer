@@ -6,7 +6,7 @@
  * Time: 15:11
  */
 
-namespace App\DTO;
+namespace App\DTO\Game;
 
 
 class GameObject implements \JsonSerializable
@@ -18,7 +18,6 @@ class GameObject implements \JsonSerializable
     protected $type;
     protected $x;
     protected $y;
-    protected $movable;
 
     public function __construct($x, $y, $char, $type)
     {
@@ -27,7 +26,6 @@ class GameObject implements \JsonSerializable
         $this->type = $type;
         $this->x = $x;
         $this->y = $y;
-        $this->movable = false;
         self::$allObjects[$this->id] = $this;
     }
 
@@ -100,18 +98,6 @@ class GameObject implements \JsonSerializable
         return $this->char;
     }
 
-    protected function getReturnedParams()
-    {
-        return [
-            'id' => $this->id,
-            'char' => $this->char,
-            'type' => $this->type,
-            'x' => $this->x,
-            'y' => $this->y,
-            'movable' => $this->movable,
-        ];
-    }
-
     /**
      * Specify data which should be serialized to JSON
      * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -121,6 +107,12 @@ class GameObject implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return json_encode($this->getReturnedParams());
+        return [
+            'id' => $this->id,
+            'char' => $this->char,
+            'type' => $this->type,
+            'x' => $this->x,
+            'y' => $this->y,
+        ];
     }
 }

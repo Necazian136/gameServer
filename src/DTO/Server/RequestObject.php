@@ -6,7 +6,7 @@
  * Time: 13:58
  */
 
-namespace App\DTO;
+namespace App\DTO\Server;
 
 
 use Ratchet\ConnectionInterface;

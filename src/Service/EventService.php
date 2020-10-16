@@ -8,10 +8,9 @@
 
 namespace App\Service;
 
-
-use App\DTO\Player;
-use App\DTO\RequestObject;
-use App\DTO\ResponseObject;
+use App\DTO\Game\PlayerObject;
+use App\DTO\Server\RequestObject;
+use App\DTO\Server\ResponseObject;
 
 class EventService
 {
@@ -28,8 +27,8 @@ class EventService
     {
         list($x, $y) = $this->mapService->findRandomEmptyTile();
         $player = $this->playerService->createPlayer((int)$x, (int)$y, $request->conn);
-        $request->conn->send(new ResponseObject(ResponseObject::MAP_KEY, $this->mapService->getMapForPlayer($player)));
-        $request->conn->send(new ResponseObject(ResponseObject::GET_PLAYER_KEY, $player));
+        $request->conn->send(new ResponseObject(ResponseObject::MAP_KEY, $this->mapService->getMap()));
+        $request->conn->send(new ResponseObject(ResponseObject::GET_MY_PLAYER_KEY, $player));
     }
 
     public function disconnectEvent(RequestObject $request)
@@ -50,7 +49,7 @@ class EventService
     public function addPlayerEvent(RequestObject $request)
     {
         /**
-         * @var Player $player
+         * @var PlayerObject $player
          */
         $player = $request->value;
         $request->conn->send(new ResponseObject(ResponseObject::ADD_PLAYERS_KEY, $player));
@@ -59,7 +58,7 @@ class EventService
     public function removePlayerEvent(RequestObject $request)
     {
         /**
-         * @var Player $player
+         * @var PlayerObject $player
          */
         $player = $request->value;
         $request->conn->send(new ResponseObject(ResponseObject::REMOVE_PLAYERS_KEY, $player));
@@ -68,7 +67,7 @@ class EventService
     public function updatePlayerEvent(RequestObject $request)
     {
         /**
-         * @var Player $player
+         * @var PlayerObject $player
          */
         $player = $request->value;
         $request->conn->send(new ResponseObject(ResponseObject::UPDATE_PLAYER_KEY, $player));

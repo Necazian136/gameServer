@@ -6,13 +6,13 @@
  * Time: 14:44
  */
 
-namespace App\DTO;
+namespace App\DTO\Game;
 
 
 use App\Service\ObjectMapperService;
 use Ratchet\ConnectionInterface;
 
-class Player extends GameObject
+class PlayerObject extends GameObject
 {
     private $conn;
 
@@ -30,7 +30,6 @@ class Player extends GameObject
         parent::__construct($x, $y, $char, ObjectMapperService::TYPE_PLAYER);
         $this->conn = $conn;
         $this->vision = 11;
-        $this->movable = true;
     }
 
     /**

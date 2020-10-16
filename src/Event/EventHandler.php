@@ -9,7 +9,8 @@
 namespace App\Event;
 
 
-use App\DTO\RequestObject;
+
+use App\DTO\Server\RequestObject;
 
 class EventHandler
 {

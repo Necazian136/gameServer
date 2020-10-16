@@ -8,7 +8,7 @@
 
 namespace App;
 
-use App\DTO\RequestObject;
+use App\DTO\Server\RequestObject;
 use App\Event\EventDispatcher;
 use App\Event\EventHandler;
 use App\Service\EventService;
@@ -26,7 +26,7 @@ class SocketHandler implements MessageComponentInterface
     {
         $eventDispatcher = new EventDispatcher();
         $playerService = new PlayerService($eventDispatcher);
-        $mapService = new MapService('map.txt', new ObjectMapperService());
+        $mapService = new MapService('map.txt', 'tile_map.txt', new ObjectMapperService());
         $eventService = new EventService($playerService, $mapService);
 
         $eventDispatcher->registerObjectEvents($eventService);

@@ -9,7 +9,8 @@
 namespace App\Service;
 
 
-use App\DTO\GameObject;
+
+use App\DTO\Game\GameObject;
 
 class ObjectMapperService
 {
@@ -19,15 +20,6 @@ class ObjectMapperService
     public function createObject($x, $y, $char)
     {
         switch ($char) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-                return new GameObject($x, $y, $char, self::TYPE_PLAYER);
             case 'B':
                 return new GameObject($x, $y, $char, self::TYPE_BUSH);
                 break;

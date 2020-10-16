@@ -10,15 +10,15 @@
 namespace App\Service;
 
 
-use App\DTO\Player;
-use App\DTO\RequestObject;
+use App\DTO\Game\PlayerObject;
+use App\DTO\Server\RequestObject;
 use App\Event\EventDispatcher;
 use Ratchet\ConnectionInterface;
 
 class PlayerService
 {
     /**
-     * @var Player[]
+     * @var PlayerObject[]
      */
     private $players;
 
@@ -46,18 +46,18 @@ class PlayerService
      * @param $x
      * @param $y
      * @param ConnectionInterface $conn
-     * @return Player
+     * @return PlayerObject
      */
     public function createPlayer($x, $y, ConnectionInterface $conn)
     {
-        $player = new Player($x, $y, (string)(count($this->players)), $conn);
+        $player = new PlayerObject($x, $y, (string)(count($this->players)), $conn);
         $this->players[$conn->resourceId] = ($player);
         $this->visiblePlayers[$player->getId()] = new \SplObjectStorage();
         $this->updateVisiblePlayers($player);
         return $player;
     }
 
-    public function updateVisiblePlayers(Player $player)
+    public function updateVisiblePlayers(PlayerObject $player)
     {
         $newVisiblePlayers = $this->getPlayersAroundPlayer($player);
         foreach ($this->visiblePlayers[$player->getId()] as $oldVisiblePlayer) {
@@ -84,7 +84,7 @@ class PlayerService
     }
 
     /**
-     * @return Player[]
+     * @return PlayerObject[]
      */
     public function getPlayers()
     {
@@ -93,10 +93,10 @@ class PlayerService
 
 
     /**
-     * @param Player $player
-     * @return \SplObjectStorage|Player[]
+     * @param PlayerObject $player
+     * @return \SplObjectStorage|PlayerObject[]
      */
-    public function getPlayersAroundPlayer(Player $player)
+    public function getPlayersAroundPlayer(PlayerObject $player)
     {
         $vision = (int)($player->getVision() / 2);
         $players = new \SplObjectStorage();
@@ -115,7 +115,7 @@ class PlayerService
 
     /**
      * @param ConnectionInterface $conn
-     * @return Player
+     * @return PlayerObject
      */
     public function getPlayerByConnection(ConnectionInterface $conn)
     {
@@ -127,12 +127,18 @@ class PlayerService
         unset($this->players[$conn->resourceId]);
     }
 
-    public function removePlayer(Player $player)
+    public function removePlayer(PlayerObject $player)
     {
+        $players = $this->getPlayersAroundPlayer($player);
         unset($this->players[$player->getConn()->resourceId]);
+        foreach ($players as $otherPlayer) {
+            if ($player->getId() !== $otherPlayer->getId()) {
+                $this->updateVisiblePlayers($otherPlayer);
+            }
+        }
     }
 
-    public function movePlayer(Player $player, $direction)
+    public function movePlayer(PlayerObject $player, $direction)
     {
         switch ($direction) {
             case 'Up':
