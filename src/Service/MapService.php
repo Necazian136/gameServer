@@ -21,6 +21,8 @@ class MapService
 
     private $mapHeight;
 
+    private $map;
+
     private $mapWidth;
 
     public function __construct($mapPath, $tileMap, ObjectMapperService $objectMapperService)
@@ -40,12 +42,17 @@ class MapService
         $x = 0;
         foreach ($tiles as $row) {
             $x = 0;
+            $this->map[$y] = [];
             foreach ($row as $tileChar) {
-                $objectChar = $objects[$x][$y];
-                $object = $objectMapperService->createObject($x, $y, $char);
-                if ($object) {
-                    $this->objects->attach($object);
+                $object = null;
+                if (isset($objects[$x][$y])) {
+                    $objectChar = $objects[$x][$y];
+                    $object = $objectMapperService->createObject($x, $y, $objectChar);
+                    if ($object) {
+                        $this->objects->attach($object);
+                    }
                 }
+                $this->map[$y][$x] = ['tile' => ['x' => $x, 'y' => $y, 'char' => $tileChar], 'object' => $object];
                 $x++;
             }
             $y++;
@@ -81,7 +88,7 @@ class MapService
 
     public function getMap()
     {
-        return ['objects' => $this->map, 'tiles'=> $this->tileMap];
+        return $this->map;
     }
 
     public function addPlayer(PlayerObject $player)
