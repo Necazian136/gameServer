@@ -18,6 +18,7 @@ class GameObject implements \JsonSerializable
     protected $type;
     protected $x;
     protected $y;
+    protected $action;
 
     public function __construct($x, $y, $char, $type)
     {
@@ -26,7 +27,26 @@ class GameObject implements \JsonSerializable
         $this->type = $type;
         $this->x = $x;
         $this->y = $y;
+        $this->action = null;
         self::$allObjects[$this->id] = $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param mixed $action
+     * @return GameObject
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+        return $this;
     }
 
     /**
@@ -113,6 +133,7 @@ class GameObject implements \JsonSerializable
             'type' => $this->type,
             'x' => $this->x,
             'y' => $this->y,
+            'action' => $this->action,
         ];
     }
 }

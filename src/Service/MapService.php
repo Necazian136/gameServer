@@ -45,8 +45,8 @@ class MapService
             $this->map[$y] = [];
             foreach ($row as $tileChar) {
                 $object = null;
-                if (isset($objects[$x][$y])) {
-                    $objectChar = $objects[$x][$y];
+                if (isset($objects[$y][$x])) {
+                    $objectChar = $objects[$y][$x];
                     $object = $objectMapperService->createObject($x, $y, $objectChar);
                     if ($object) {
                         $this->objects->attach($object);

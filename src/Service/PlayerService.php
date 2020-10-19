@@ -154,10 +154,12 @@ class PlayerService
                 $player->setX($player->getX() + 1);
                 break;
         }
+        $player->setAction(['move' => $direction]);
         $this->eventDispatcher->dispatch(new RequestObject('updatePlayer', $player, $player->getConn()));
         $this->updateVisiblePlayers($player);
         foreach ($this->visiblePlayers[$player->getId()] as $otherPlayer) {
             $this->eventDispatcher->dispatch(new RequestObject('updatePlayer', $player, $otherPlayer->getConn()));
         }
+        $player->setAction(null);
     }
 }
