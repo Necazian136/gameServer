@@ -43,7 +43,7 @@ class EventService
     public function moveEvent(RequestObject $request)
     {
         $player = $this->playerService->getPlayerByConnection($request->conn);
-        $this->playerService->movePlayer($player, $request->value);
+        $this->playerService->movePlayer($player, $request->value, $this->mapService->getMap());
     }
 
     public function addPlayerEvent(RequestObject $request)

@@ -138,19 +138,31 @@ class PlayerService
         }
     }
 
-    public function movePlayer(PlayerObject $player, $direction)
+    public function movePlayer(PlayerObject $player, $direction, $map)
     {
         switch ($direction) {
             case 'Up':
+                if ($map[$player->getY() - 1][$player->getX()]['object'] !== null) {
+                    return;
+                }
                 $player->setY($player->getY() - 1);
                 break;
             case 'Down':
+                if ($map[$player->getY() + 1][$player->getX()]['object'] !== null) {
+                    return;
+                }
                 $player->setY($player->getY() + 1);
                 break;
             case 'Left':
+                if ($map[$player->getY()][$player->getX() - 1]['object'] !== null) {
+                    return;
+                }
                 $player->setX($player->getX() - 1);
                 break;
             case 'Right':
+                if ($map[$player->getY()][$player->getX() + 1]['object'] !== null) {
+                    return;
+                }
                 $player->setX($player->getX() + 1);
                 break;
         }
